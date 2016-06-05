@@ -1,12 +1,49 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html>
+<!DOCTYPE>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Login</title>
-</head>
-<body>
-Login Page
-</body>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Login</title>
+		<style>
+			body{
+				background-color:white;
+				color:rgb(200,200,200);
+				font-family:"Arial";
+			}
+			
+			form{
+				position:absolute;
+				width:100%;
+				left:0%;
+				top:50%;
+				text-align:center;
+				margin:0;
+			}
+			
+			input{
+				background-color:rgb(200,200,200);
+				border-style:none;
+				margin:2;
+				width:200;
+				height:40;
+				padding:10;
+			}
+			
+			div{
+				background-color:white;
+				color:red;
+				margin:auto;
+			}
+		</style>
+	</head>
+	<body>
+		<form action="/login" method="POST">
+			<input placeholder="Username" type="text" name="username"/><br>
+			<input placeholder="Password" type="password" name="password"/><br>
+			<input type="submit" value="Login"/>
+			<div >${error}</div>
+		</form>
+		
+	</body>
 </html>

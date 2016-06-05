@@ -1,0 +1,53 @@
+package com.webapp;
+
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns="/book")
+public class BookServlet extends HttpServlet{
+	ResultSet rs;
+	ArrayList<Session> sessions = new ArrayList<>();
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		SQL sql = new SQL();
+		rs = sql.getResults("SELECT * FROM timeslots WHERE date='"+req.getParameter("date")+"'");
+		try {
+			while(rs.next()){
+				Session temp = new Session(rs.getInt(1),rs.getDate(2),rs.getTime(3),rs.getTime(4));
+				for(int i = 0;i<8;i++){
+					if(rs.getInt(i+5) != 0){
+						ResultSet name = sql.getResults("SELECT firstName, surname FROM children WHERE ID='"+rs.getInt(i+5)+"'");
+						name.absolute(1);
+						temp.booked[i]= name.getString(1) +" " + name.getString(2);
+					} else{
+						temp.booked[i]="";
+					}
+				}
+				for(int i = 0;i<2;i++){
+					if(rs.getInt(i+13) != 0){
+						ResultSet name = sql.getResults("SELECT firstName, surname FROM children WHERE ID='"+rs.getInt(i+13)+"'");
+						name.absolute(1);
+						temp.reserve[i]= name.getString(1) +" " + name.getString(2);
+					} else{
+						temp.reserve[i]="";
+					}
+				}
+				sessions.add(temp);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		req.setAttribute("sessions", sessions);
+		sql.close();
+		req.getRequestDispatcher("/WEB-INF/views/book.jsp").forward(req, res);
+		sessions.clear();
+	}
+}

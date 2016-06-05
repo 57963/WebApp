@@ -1,0 +1,48 @@
+package com.webapp;
+
+import java.util.List;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns="/welcome")
+public class WelcomeServlet extends HttpServlet{
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		req.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(req, res);
+		SQL sql = new SQL();
+		List<Child> children = new ArrayList<Child>();
+		try {
+			ResultSet resu = sql.getResults("SELECT * FROM children WHERE childOf = '" + req.getSession().getAttribute("id")+"'");
+			while(resu.next()){
+				children.add(new Child(resu.getInt(1),resu.getString(2),resu.getString(3)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		req.setAttribute("children", children);
+		System.out.println(children.get(0).firstName);
+	}
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		res.getWriter().print("welcome post");
+	}
+}
+
+class Child{
+	public int ID;
+	public String firstName;
+	public String surname;
+	public Child(int ID, String firstName, String surname){
+		this.ID = ID;
+		this.firstName = firstName;
+		this.surname = surname;
+	}
+}

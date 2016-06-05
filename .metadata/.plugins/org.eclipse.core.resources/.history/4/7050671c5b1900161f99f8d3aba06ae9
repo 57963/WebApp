@@ -1,0 +1,8 @@
+package com.webapp;
+
+import javax.servlet.annotation.WebServlet;
+
+@WebServlet(urlPatterns="/")
+public class DisplayServlet {
+	
+}

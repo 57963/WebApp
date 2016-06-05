@@ -1,0 +1,114 @@
+package com.webapp;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@SuppressWarnings("serial")
+@WebServlet(urlPatterns="/welcome")
+public class WelcomeServlet extends HttpServlet{
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		SQL sql = new SQL();
+		ResultSet rs;
+		ArrayList<Child> children = new ArrayList<>();
+		ArrayList<Day> days = new ArrayList<>();
+		ArrayList<ArrayList<Calendar>> dates = new ArrayList<>();
+		rs = sql.getResults("SELECT * FROM children WHERE childOf = '" + req.getSession().getAttribute("id")+"'");
+		try {
+			while(rs.next()){
+				children.add(new Child(rs.getInt(1),rs.getString(2),rs.getString(3)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		req.setAttribute("children", children);
+		rs = sql.getResults("SELECT * FROM timeslots");
+		try {
+			while(rs.next()){
+				boolean alreadyAdded = false;
+				for(Day d:days){
+					if(d.date.equals(rs.getDate(2))){
+						alreadyAdded = true;
+					}
+				}
+				if(!alreadyAdded){
+					days.add(new Day(rs.getDate(2)));
+				}
+			}
+			for(Day d: days){
+				rs.beforeFirst();
+				while(rs.next()){
+					if(rs.getDate(2).equals(d.date)){
+						if(d.start==null){
+							d.start=rs.getTime(3);
+						}else if(rs.getTime(3).before(d.start)){
+							d.start=rs.getTime(3);
+						}
+						if(d.end==null){
+							d.end=rs.getTime(4);
+						}else if(rs.getTime(4).after(d.end)){
+							d.end=rs.getTime(4);
+						}
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		req.setAttribute("days", days);
+		Date earliest = days.get(0).date;
+		Date latest = days.get(0).date;
+		for(Day d:days){
+			if(earliest.after(d.date)){
+				earliest = d.date;
+			} else if (latest.before(d.date)){
+				latest = d.date;
+			}
+		}
+		Calendar cEarliest = Calendar.getInstance();
+		cEarliest.setTime(earliest);
+		cEarliest.setFirstDayOfWeek(Calendar.MONDAY);
+		Calendar cLatest = Calendar.getInstance();
+		cLatest.setTime(latest);
+		cLatest.setFirstDayOfWeek(Calendar.MONDAY);
+		cEarliest.add(Calendar.DAY_OF_MONTH, -cEarliest.get(Calendar.DAY_OF_WEEK)+2);
+		cLatest.add(Calendar.DAY_OF_MONTH, 8-cLatest.get(Calendar.DAY_OF_WEEK));
+		int weeks = cLatest.get(Calendar.WEEK_OF_YEAR)-cEarliest.get(Calendar.WEEK_OF_YEAR);
+		for(int week = 0; week<weeks;week++){
+			ArrayList<Calendar> tempWeek = new ArrayList<>();
+			for(int i = 0;i<7;i++){
+				Calendar tempDay= Calendar.getInstance();
+				tempDay = (Calendar) cEarliest.clone();
+				tempDay.add(Calendar.DAY_OF_MONTH, i);
+				tempWeek.add(tempDay);
+			}
+			dates.add(tempWeek);
+		}
+		for(ArrayList<Calendar> week:dates){
+			for(Calendar day:week){
+				System.out.println(day.getTime());
+			}
+			System.out.println();
+		}
+		req.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(req, res);
+		sql.close();
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		res.getWriter().print("welcome post");
+	}
+}

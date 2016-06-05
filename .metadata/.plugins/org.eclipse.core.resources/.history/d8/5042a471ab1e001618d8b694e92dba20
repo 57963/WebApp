@@ -1,0 +1,7 @@
+package com.webapp;
+
+import java.util.ArrayList;
+
+public class Week {
+	ArrayList<Day> days = new ArrayList<>();
+}

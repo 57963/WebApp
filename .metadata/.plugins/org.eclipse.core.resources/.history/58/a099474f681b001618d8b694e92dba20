@@ -1,0 +1,42 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Welcome ${username}</title>
+		<style>
+			body{
+				font-family:"Arial";
+			}
+			
+			h1{
+				margin-bottom:10px;
+				position:absolute;
+				right:0px;
+			}
+			
+			#logout{
+				background-color:rgb(200,200,200);
+				border-style:none;
+				margin:2px;
+				width:200px;
+				height:40px;
+				padding:10px;
+				position:absolute;
+				top:260px;
+				right:0px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Welcome, ${username}.</h1>
+		<form action="/logout" method="POST">
+			<input id="logout"  type="submit" value="logout"/>
+		</form>
+		<c:forEach var="child" items="${children}">
+			<c:out value="${child.firstName}"></c:out>
+		</c:forEach>
+	</body>
+</html>

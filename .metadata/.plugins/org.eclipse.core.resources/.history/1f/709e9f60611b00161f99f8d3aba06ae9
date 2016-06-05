@@ -1,0 +1,12 @@
+package com.webapp;
+
+public class Child{
+	public int ID;
+	public String firstName;
+	public String surname;
+	public Child(int ID, String firstName, String surname){
+		this.ID = ID;
+		this.firstName = firstName;
+		this.surname = surname;
+	}
+}

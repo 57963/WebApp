@@ -1,0 +1,48 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE>
+<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Book for ${param.date}</title>
+	<style>
+		body{
+				font-family:"Arial";
+				padding:10px;
+		}
+		
+		table{
+			float:left;
+			margin-right:10px;
+			width:150px;
+		}
+		
+		table, th, td{
+   				border: 1px solid black;
+  				border-collapse: collapse;
+		}
+	</style>
+	</head>
+	<body>
+		<c:forEach var="session" items="${sessions}">
+			<table>
+				<tr>
+					<th>
+						${session.start.getHours()}:<c:if test="${session.start.getMinutes()<10 }">0</c:if>${session.start.getMinutes()}-${session.end.getHours()}:<c:if test="${session.end.getMinutes()<10 }">0</c:if>${session.end.getMinutes()}
+					</th>
+				</tr>
+				<c:forEach var="child" items="${session.booked}">
+					<tr><td>
+						${child}<br>
+					</td></tr>
+				</c:forEach>
+				<c:forEach var="child" items="${session.reserved}">
+					<tr><td style="color:gray;">
+						${child}<br>
+					</td></tr>
+				</c:forEach>
+			</table>
+		</c:forEach>
+	</body>
+</html>

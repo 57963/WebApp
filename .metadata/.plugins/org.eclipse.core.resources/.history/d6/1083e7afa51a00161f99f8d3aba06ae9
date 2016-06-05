@@ -1,0 +1,6 @@
+package com.webapp;
+
+@WebServlet(urlPatterns="/welcome")
+public class WelcomeServlet {
+
+}

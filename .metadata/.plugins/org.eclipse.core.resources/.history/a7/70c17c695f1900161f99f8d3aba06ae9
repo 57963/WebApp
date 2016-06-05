@@ -1,0 +1,33 @@
+package com.webapp;
+
+import java.io.IOException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.sql.*;
+
+@WebServlet(urlPatterns="/")
+public class DisplayServlet extends HttpServlet{
+	
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.getWriter().println("hi");
+		ResultSet results;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/testwebapp", "root", "root");
+			results = conn.prepareStatement("SELECT * FROM users").executeQuery();
+			while(results.next()){
+				response.getWriter().println(results.getString(2));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+}

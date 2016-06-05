@@ -1,0 +1,33 @@
+package com.webapp;
+
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns="/welcome")
+public class WelcomeServlet extends HttpServlet{
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		req.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(req, res);
+		SQL sql = new SQL();
+		try {
+			ResultSet res = sql.getResults("SELECT * FROM children WHERE childOf = '" + req.getSession().getAttribute("id")+"'");
+			req.setAttribute("children", res);
+			while(res.next()){
+				System.out.println(res.getString(1)+", "+res.getString(2)+", "+res.getString(3));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		res.getWriter().print("welcome post");
+	}
+}

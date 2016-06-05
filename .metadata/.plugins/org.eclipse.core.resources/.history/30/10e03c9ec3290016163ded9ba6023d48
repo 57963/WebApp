@@ -1,0 +1,119 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Book for ${param.date}</title>
+		<style>
+			body{
+					font-family:"Arial";
+					padding:10;
+			}
+			
+			table{
+				float:left;
+				margin-right:10;
+			}
+			
+			#nameCol{
+				width:150;
+			}
+			
+			#optCol{
+				width:20;
+				padding:0;
+			}
+			
+			table, th, td{
+	   				border: 1px solid black;
+	  				border-collapse: collapse;
+			}
+			
+			form{
+				margin:0;
+				height:20;
+			}
+			
+			input{
+				background-color:rgb(200,200,200);
+				border-style:none;
+				height:20;
+				width:100%;
+			}
+			
+			select{
+				border:0;
+				padding:0;
+				font-size:medium;
+				height:18;
+			}
+			
+			
+		</style>
+	</head>
+	<body>
+		<c:forEach var="session" items="${sessions}">
+			<table>
+				<c:set var="addBtn" value="true"/>
+				<tr>
+					<th colspan="2">
+						${session.start.getHours()}:<c:if test="${session.start.getMinutes()<10 }">0</c:if>${session.start.getMinutes()}-${session.end.getHours()}:<c:if test="${session.end.getMinutes()<10 }">0</c:if>${session.end.getMinutes()}
+					</th>
+				</tr>
+				<c:forEach begin="0" end="7" varStatus="loop">
+					<c:set var="child" value="${session.booked[loop.index]}"/>
+					<c:if test="${addBtn && child[0]==null }">
+						<c:set var="addBtn" value="false"/>
+						<tr>
+							<td id="nameCol">
+								<select>
+									<c:forEach var="name" items="${children}">
+										<option>${name}</option>
+									</c:forEach>
+								</select>
+							</td>
+							<td id="optCol">
+								<c:if test="${child[1].equals('1')}">
+									<form action="/book?do=rem&no=${loop.index}&sess=${session.ID}" method="post">
+										<input type="submit" value="-">
+									</form>
+								</c:if>
+							</td>
+						</tr>
+					</c:if>
+					<c:if test="${!addBtn || child[0]!=null }">
+						<tr>
+							<td id="nameCol">
+								${child[0]}<br>
+							</td>
+							<td id="optCol">
+								<c:if test="${child[1].equals('1')}">
+									<form action="/book?do=rem&no=${loop.index}&sess=${session.ID}" method="post">
+										<input type="submit" value="-">
+									</form>
+								</c:if>
+							</td>
+						</tr>
+					</c:if>
+				</c:forEach>
+				<c:forEach begin="0" end="1" varStatus="loop">
+					<c:set var="child" value="${session.reserve[loop.index]}"/>
+					<tr>
+						<td style="background-color:rgb(230,230,230);" id="nameCol">
+							${child[0]}<br>
+						</td>
+						<td id="optCol">
+							<c:if test="${child[1].equals('1')}">
+								<form action="/book?do=rem&no=${loop.index+9}&sess=${session.ID}" method="post">
+									<input type="submit" value="-">
+								</form>
+							</c:if>
+						</td>
+					</tr>
+				</c:forEach>
+			</table>
+		</c:forEach>
+	</body>
+</html>

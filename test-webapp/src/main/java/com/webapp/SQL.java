@@ -1,0 +1,45 @@
+package com.webapp;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class SQL {
+	Connection conn;
+	ResultSet rs;
+	public SQL(){
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/testwebapp", "root", "root");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public ResultSet getResults(String req){
+		try {
+			rs= conn.prepareStatement(req).executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
+	}
+	
+	public void doUpdate(String req){
+		try {
+			conn.prepareStatement(req).executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void close(){
+		if (null != rs) {
+			try { rs.close();} catch(Exception ex) {};
+        }
+		if (null != conn) {
+			try { conn.close();} catch(Exception ex) {};
+        }
+	}
+}

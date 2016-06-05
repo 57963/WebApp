@@ -1,0 +1,54 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Login</title>
+		<style>
+			body{
+				background-color:white;
+				color:rgb(200,200,200);
+				font-family:"Arial";
+			}
+			
+			form{
+				position:absolute;
+				width:100%;
+				left:0%;
+				top:50%;
+				text-align:center;
+			}
+			
+			input/*[type="password"],[type="text"]*/{
+				background-color:rgb(200,200,200);
+				border-style:none;
+				border-top-style:solid;
+				border-top-color:white;
+				border-bottom-style:solid;
+				border-bottom-color:white;
+			}
+			
+			div{
+				background-color:white;
+				color:red;
+				margin:auto;
+				border-style:solid;
+				border-color:red;
+			}
+			
+			.formElement{
+				width:150px;
+			}
+		</style>
+	</head>
+	<body>
+		<form action="/login" method="POST">
+			<input placeholder="Username" class="formElement" type="text" name="username"/><br>
+			<input placeholder="Password" class="formElement" type="password" name="password"/><br>
+			<input class="formElement" type="submit" value="Login"/>
+			<div class="formElement">${error}</div>
+		</form>
+		
+	</body>
+</html>

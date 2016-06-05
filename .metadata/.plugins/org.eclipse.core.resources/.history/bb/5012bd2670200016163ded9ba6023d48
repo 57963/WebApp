@@ -1,0 +1,31 @@
+package com.webapp;
+
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns="/book")
+public class BookServlet extends HttpServlet{
+	ResultSet rs;
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		SQL sql = new SQL();
+		rs = sql.getResults("SELECT * FROM timeslots WHERE date='"+req.getParameter("date")+"'");
+		res.getWriter().println(req.getParameter("date"));
+		try {
+			while(rs.next()){
+				res.getWriter().println(rs.getTime(3));
+				res.getWriter().println(rs.getTime(4));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		sql.close();
+	}
+}

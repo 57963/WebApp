@@ -1,0 +1,30 @@
+package com.webapp;
+
+import java.io.IOException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.*;
+
+@SuppressWarnings("serial")
+@WebServlet(urlPatterns="/display")
+public class DisplayServlet extends HttpServlet{
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		SQL sql = new SQL();
+		ResultSet results;
+		try {
+			results = sql.getResults("SELECT * FROM users");
+			while(results.next()){
+				res.getWriter().print(results.getString(1)+"  ");
+				res.getWriter().print(results.getString(2)+"  ");
+				res.getWriter().println(results.getString(3));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+}

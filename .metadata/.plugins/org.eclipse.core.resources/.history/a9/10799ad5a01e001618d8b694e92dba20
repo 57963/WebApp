@@ -1,0 +1,48 @@
+package com.webapp;
+
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@SuppressWarnings("serial")
+@WebServlet(urlPatterns="/welcome")
+public class WelcomeServlet extends HttpServlet{
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		SQL sql = new SQL();
+		ResultSet rs;
+		ArrayList<Child> children = new ArrayList<>();
+		ArrayList<Day> days = new ArrayList<>();
+		rs = sql.getResults("SELECT * FROM children WHERE childOf = '" + req.getSession().getAttribute("id")+"'");
+		try {
+			while(rs.next()){
+				children.add(new Child(rs.getInt(1),rs.getString(2),rs.getString(3)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		req.setAttribute("children", children);
+		rs = sql.getResults("SELECT * FROM timeslots");
+		try {
+			while(rs.next()){
+				days.add(new Day(rs.getDate(2)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		req.setAttribute("days", days);
+		req.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(req, res);
+		sql.close();
+	}
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		res.getWriter().print("welcome post");
+	}
+}

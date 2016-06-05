@@ -1,0 +1,28 @@
+package com.webapp;
+
+import java.sql.Date;
+import java.sql.Time;
+
+public class Session {
+	public Date date;
+	public Time start;
+	public Time end;
+	public String[] names = new String[8];
+	public Session(Date date, Time start, Time end){
+		this.date = date;
+		this.start = start;
+		this.end = end;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public Time getStart() {
+		return start;
+	}
+	public Time getEnd() {
+		return end;
+	}
+	public String[] getNames() {
+		return names;
+	}
+}

@@ -1,0 +1,31 @@
+package com.webapp;
+
+import java.sql.Date;
+import java.sql.Time;
+
+public class Day {
+	public Date day;
+	public Time start;
+	public Time end;
+	public Day(Date day){
+		this.day=day;
+	}
+	public Date getDay() {
+		return day;
+	}
+	public void setDay(Date day) {
+		this.day = day;
+	}
+	public Time getStart() {
+		return start;
+	}
+	public void setStart(Time start) {
+		this.start = start;
+	}
+	public Time getEnd() {
+		return end;
+	}
+	public void setEnd(Time end) {
+		this.end = end;
+	}
+}

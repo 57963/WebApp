@@ -1,0 +1,87 @@
+package com.webapp;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns="/book")
+public class BookServlet extends HttpServlet{
+	ResultSet rs;
+	ArrayList<Session> sessions;
+	Date date;
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		sessions = new ArrayList<>();
+		SQL sql = new SQL();
+		if(req.getParameter("date")!=null){
+			date = Date.valueOf(req.getParameter("date"));
+		}
+		rs = sql.getResults("SELECT * FROM timeslots WHERE date='"+req.getParameter("date")+"'");
+		try {
+			while(rs.next()){
+				Session temp = new Session(rs.getInt(1),rs.getDate(2),rs.getTime(3),rs.getTime(4));
+				for(int i = 0;i<8;i++){
+					if(rs.getInt(i+5) != 0){
+						ResultSet name = sql.getResults("SELECT firstName, surname, childOf FROM children WHERE ID='"+rs.getInt(i+5)+"'");
+						name.absolute(1);
+						temp.booked[i][0]= name.getString(1) +" " + name.getString(2);
+						if(name.getInt(3)==(int)req.getSession().getAttribute("id")){
+							temp.booked[i][1] = "1";
+						}
+					}
+				}
+				for(int i = 0;i<2;i++){
+					if(rs.getInt(i+13) != 0){
+						ResultSet name = sql.getResults("SELECT firstName, surname, childOf FROM children WHERE ID='"+rs.getInt(i+13)+"'");
+						name.absolute(1);
+						temp.reserve[i][0]= name.getString(1) +" " + name.getString(2);
+						if(name.getInt(3)==(int)req.getSession().getAttribute("id")){
+							temp.reserve[i][1] = "1";
+						}
+					}
+				}
+				sessions.add(temp);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		req.setAttribute("sessions", sessions);
+		sql.close();
+		req.getRequestDispatcher("/WEB-INF/views/book.jsp").forward(req, res);
+		
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		switch(req.getParameter("do")){
+		case "rem":
+			removeFromSession(Integer.parseInt(req.getParameter("sess")),Integer.parseInt(req.getParameter("no")));
+			break;
+		}
+		doGet(req,res);
+	}
+	
+	void removeFromSession(int sess, int no){
+		Session currSess = null;
+		for(Session s:sessions){
+			if(s.ID == sess){
+				currSess=s;
+			}
+		}
+		if(no<8){
+			currSess.booked[no][0]=null;
+			currSess.booked[no][1]=null;
+		} else{
+			currSess.reserve[no-9][0]=null;
+			currSess.reserve[no-9][1]=null;
+		}
+	}
+}

@@ -1,0 +1,55 @@
+package com.webapp;
+
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns="/login")
+public class LoginServlet extends HttpServlet{
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		boolean loggedIn=false;
+		if(req.getSession(false)!=null){
+			if((boolean) req.getSession().getAttribute("loggedIn")){
+				loggedIn=true;
+			}
+		}
+		if(loggedIn){
+			res.getWriter().println("valid");
+		}else{
+			req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, res);
+		}
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		SQL sql = new SQL();
+		boolean valid = false;
+		String username="";
+		ResultSet results;
+		try {
+			results = sql.getResults("SELECT username,password FROM users WHERE username='"+req.getParameter("username")+"'");
+			while(results.next()){
+				if(results.getString(2).equals(req.getParameter("password"))){
+					valid=true;
+					username=results.getString(1);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(valid){
+			req.getSession().setAttribute("loggedIn", true);
+			res.getWriter().println("valid "+username);
+		} else{
+			req.setAttribute("error", "Invalid login credentials");
+			req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, res);
+		}
+	}
+}
