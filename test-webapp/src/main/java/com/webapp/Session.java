@@ -36,6 +36,17 @@ public class Session {
 		return ID;
 	}
 	
+	public Child[] getAll(){
+		Child[] all = new Child[10];
+		for(int i=0;i<8;i++){
+			all[i]=booked[i];
+		}
+		for(int i=0;i<2;i++){
+			all[i+8]=reserve[i];
+		}
+		return all;
+	}
+	
 	public boolean allInSession(ArrayList<Child> children){
 		boolean allInSession = true;
 		for(Child c: children){

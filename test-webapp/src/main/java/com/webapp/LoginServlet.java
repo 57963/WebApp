@@ -30,6 +30,7 @@ public class LoginServlet extends HttpServlet{
 					if(rs.getString(3).equals(req.getParameter("password"))){
 						valid=true;
 						req.getSession().setAttribute("id", rs.getInt(1));
+						req.getSession().setAttribute("admin", rs.getBoolean(4));
 					}
 				}
 			}
@@ -41,7 +42,12 @@ public class LoginServlet extends HttpServlet{
 		if(valid){
 			req.getSession().setAttribute("loggedIn", true);
 			req.getSession().setAttribute("username", req.getParameter("username"));
-			res.sendRedirect("/welcome");
+			if(req.getSession().getAttribute("forwardTo")!= null){
+				res.sendRedirect((String) req.getSession().getAttribute("forwardTo"));
+				req.getSession().removeAttribute("forwardTo");
+			} else{
+				res.sendRedirect("/welcome");
+			}
 		} else{
 			req.setAttribute("error", "Invalid login credentials");
 			req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, res);

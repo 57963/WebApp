@@ -41,8 +41,11 @@
 				height:20;
 			}
 			
-			input{
+			input[type="submit"]}{
 				background-color:rgb(200,200,200);
+			}
+			
+			input{
 				border-style:none;
 				height:20;
 				width:100%;
@@ -63,6 +66,10 @@
 			#backButton{
 				width:50;
 			}
+			
+			.reserve{
+				background-color:rgb(200,200,200);
+			}
 		</style>
 	</head>
 	<body>
@@ -75,11 +82,11 @@
 						${session.start.getHours()}:<c:if test="${session.start.getMinutes()<10 }">0</c:if>${session.start.getMinutes()}-${session.end.getHours()}:<c:if test="${session.end.getMinutes()<10 }">0</c:if>${session.end.getMinutes()}
 					</th>
 				</tr>
-				<c:forEach begin="0" end="7" varStatus="loop">
-					<c:set var="child" value="${session.booked[loop.index]}"/>
+				<c:forEach begin="0" end="9" varStatus="loop">
+					<c:set var="child" value="${session.all[loop.index]}"/>
 					<c:if test="${!addBtn || child!=null}">
 						<tr>
-							<td id="nameCol">
+							<td id="nameCol" class="${loop.index<8?'booked':'reserve'}">
 								${child.fullName}<br>
 							</td>
 							<td id="optCol">
@@ -96,54 +103,26 @@
 						<tr>
 							<td id="selectCol">
 								<c:if test="${!session.allInSession(children)}">
-									<form action="/book?do=add&no=0&sess=${session.ID}" method="post" id="addForm${session.ID}">
-										<select name="addName${session.ID}">
-											<c:forEach var="name" items="${children}">
-												<c:if test="${!session.inSession(name)}">
-													<option>${name.fullName}</option>
-												</c:if>
-											</c:forEach>
-										</select>
-									</form>
-								</c:if>
-							</td>
-							<td id="optCol">
-								<c:if test="${!session.allInSession(children)}">
-									<input type="submit" value="+" form="addForm${session.ID}"/>
-								</c:if>
-							</td>
-						</tr>
-					</c:if>
-				</c:forEach>
-				<c:forEach begin="0" end="1" varStatus="loop">
-					<c:set var="child" value="${session.reserve[loop.index]}"/>
-					<c:if test="${!addBtn || child!=null}">
-						<tr>
-							<td style="background-color:rgb(230,230,230)" id="nameCol">
-								${child.fullName}<br>
-							</td>
-							<td id="optCol">
-								<c:if test="${child.childOf.equals(id)}">
-									<form action="/book?do=rem&no=${loop.index+8}&sess=${session.ID}" method="post">
-										<input type="submit" value="-">
-									</form>
-								</c:if>
-							</td>
-						</tr>
-					</c:if>
-					<c:if test="${addBtn && child==null && !session.allInSession(children)}">
-						<c:set var="addBtn" value="false"/>
-						<tr>
-							<td style="background-color:rgb(230,230,230)" id="selectCol">
-								<c:if test="${!session.allInSession(children)}">
-									<form action="/book?do=add&no=0&sess=${session.ID}" method="post" id="addForm${session.ID}">
-										<select name="addName${session.ID}" style="background-color:rgb(230,230,230)">
-											<c:forEach var="name" items="${children}">
-												<c:if test="${!session.inSession(name)}">
-													<option>${name.fullName}</option>
-												</c:if>
-											</c:forEach>
-										</select>
+									<form action="/book?do=add&no=0&sess=${session.ID}" method="post" id="addForm${session.ID}" class="${loop.index<8?'booked':'reserve'}">
+										<c:if test="${!admin}">
+											<select name="addName${session.ID}" class="${loop.index<8?'booked':'reserve'}">
+												<c:forEach var="name" items="${children}">
+													<c:if test="${!session.inSession(name)}">
+														<option>${name.fullName}</option>
+													</c:if>
+												</c:forEach>
+											</select>
+										</c:if>
+										<c:if test="${admin}">
+											<input list="names" name="addName${session.ID}" class="${loop.index<8?'booked':'reserve'}">
+											<datalist id="names">
+												<c:forEach var="name" items="${children}">
+													<c:if test="${!session.inSession(name)}">
+														<option value="${name.fullName}">
+													</c:if>
+												</c:forEach>
+											</datalist>
+										</c:if>
 									</form>
 								</c:if>
 							</td>

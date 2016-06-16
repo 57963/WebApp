@@ -28,7 +28,11 @@ public class BookServlet extends HttpServlet{
 		ArrayList<Session> sessions = new ArrayList<>();
 		children = new ArrayList<>();
 		SQL sql = new SQL();
-		rs = sql.getResults("SELECT * FROM children WHERE childOf = '" + req.getSession().getAttribute("id")+"'");
+		if((boolean) req.getSession().getAttribute("admin")){
+			rs = sql.getResults("SELECT * FROM children");
+		}else{
+			rs = sql.getResults("SELECT * FROM children WHERE childOf = '" + req.getSession().getAttribute("id")+"'");
+		}
 		try {
 			while(rs.next()){
 				children.add(new Child(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getInt(4)));

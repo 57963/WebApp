@@ -23,7 +23,7 @@
 				margin:0;
 			}
 			
-			#logout{
+			.button{
 				background-color:rgb(200,200,200);
 				border-style:none;
 				margin:2;
@@ -31,8 +31,15 @@
 				height:30;
 				padding:7;
 				position:absolute;
-				top:45;
 				right:10;
+			}
+			
+			#logout{
+				top:45;
+			}
+			
+			#messages{
+				top:80;
 			}
 			
 			table{
@@ -55,9 +62,12 @@
 		</style>
 	</head>
 	<body>
-		<h1>Welcome, ${username}.</h1>
-		<form action="/logout" method="POST">
-			<input id="logout"  type="submit" value="Logout"/>
+		<h1>Welcome, ${username}.<c:if test="${admin}"> (Administrator)</c:if></h1>
+		<form action="logout" method="POST">
+			<input class="button" id="logout"  type="submit" value="Logout"/>
+		</form>
+		<form action="messages" method="GET">
+			<input class="button" id="messages"  type="submit" value="Messages"/>
 		</form>
 		<h3>Children</h3>
 		<c:forEach var="child" items="${children}">

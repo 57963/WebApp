@@ -10,6 +10,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @WebFilter(urlPatterns="*")
 public class LoginFilter implements Filter{
@@ -17,17 +18,18 @@ public class LoginFilter implements Filter{
 	@Override
 	public void doFilter(ServletRequest servReq, ServletResponse servRes, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) servReq;
+		HttpServletResponse res = (HttpServletResponse) servRes;
 		boolean loggedIn=false;
 		if(req.getSession(false)!=null && req.getSession().getAttribute("loggedIn")!=null){
 			if((boolean)req.getSession().getAttribute("loggedIn")==true){
 				loggedIn=true;
 			}
 		}
-		if(loggedIn){
+		if(loggedIn || req.getRequestURI().equals("/login")){
 			chain.doFilter(servReq, servRes);
-			
 		} else{
-			req.getRequestDispatcher("/login").forward(servReq, servRes);
+			req.getSession().setAttribute("forwardTo", req.getRequestURI() + "?" + req.getQueryString());
+			res.sendRedirect("/login");
 		}
 	}
 
